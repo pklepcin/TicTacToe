@@ -10,9 +10,10 @@ public class GameController : MonoBehaviour
     private FieldController fieldController;
     [SerializeField]
     private GameObject gameOverObject;
+    private GameManager manager;
     void Start ()
     {
-        var manager = GameManager.GetInstance();
+        manager = new GameManager();
         manager.onCellUpdated += UpdateField;
         StartCoroutine(GameLoop());
     }
@@ -20,7 +21,6 @@ public class GameController : MonoBehaviour
         fieldController.SetCell (col, row, type);
     }
     private IEnumerator GameLoop() {
-        var manager = GameManager.GetInstance();
         while (!manager.IsOver()) {
             yield return StartCoroutine(playerController.NextTurn());
             var lastAction = playerController.GetLastAction();
@@ -29,5 +29,8 @@ public class GameController : MonoBehaviour
             yield return null;
         }
         gameOverObject.SetActive(true);
+        
+        yield return new WaitForSeconds(2.0f);
+        SceneLoader.GetInstance().LoadScene("MenuScene");
     }
 }
